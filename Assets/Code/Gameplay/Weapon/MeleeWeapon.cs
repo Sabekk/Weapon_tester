@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeWeapon : Weapon {
@@ -14,9 +12,8 @@ public class MeleeWeapon : Weapon {
 	}
 
 	public override void SetStatistics (Weapon weapon) {
-		if (weapon is MeleeWeapon meeleWeapon) {
+		if (weapon is MeleeWeapon meeleWeapon)
 			durabilityLeft = meeleWeapon.durabilityLeft;
-		}
 	}
 
 	public override void Use () {

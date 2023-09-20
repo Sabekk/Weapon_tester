@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GunWeapon : Weapon {
@@ -19,8 +17,7 @@ public class GunWeapon : Weapon {
 	}
 
 	public override void SetStatistics (Weapon weapon) {
-		if (weapon is GunWeapon gunWeapon) {
+		if (weapon is GunWeapon gunWeapon) 
 			bulletsLeft = gunWeapon.bulletsLeft;
-		}
 	}
 }

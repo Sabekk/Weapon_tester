@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -21,11 +19,12 @@ public class PlayerController : MonoBehaviour {
 	}
 	private void Start () {
 		GetAllWeapons ();
-		ChangeWeaponName ();
+		EquipWeapon ();
 	}
 	private void OnDestroy () {
 		Events.Gameplay.Shot -= Shot;
 		Events.Gameplay.SwitchWeapon -= SwitchWeapon;
+		weapons.Clear ();
 	}
 
 	void GetAllWeapons () {
@@ -46,17 +45,19 @@ public class PlayerController : MonoBehaviour {
 			equipedWeapon.Use ();
 		}
 	}
+
 	void SwitchWeapon () {
-		if (equipedWeapon) {
-			equipedWeapon.OnUnequip ();
-			ObjectPool.Instance.ReturnToPool (equipedWeapon);
-		}
+		UnequipWeapon ();
 
 		if (equipedWeapon)
 			currentWeaponId++;
 		if (allWeapons.Count <= currentWeaponId)
 			currentWeaponId = 0;
 
+		EquipWeapon ();
+	}
+
+	void EquipWeapon () {
 		Weapon newWeapon = ObjectPool.Instance.GetFromPool (allWeapons[currentWeaponId]).GetComponent<Weapon> ();
 		weapons.TryGetValue (newWeapon.WeaponName, out Weapon ownedWeapon);
 
@@ -69,7 +70,13 @@ public class PlayerController : MonoBehaviour {
 		equipedWeapon = newWeapon;
 		equipedWeapon.transform.SetParent (handle);
 		equipedWeapon.OnEquip ();
-
 		ChangeWeaponName ();
+	}
+
+	void UnequipWeapon () {
+		if (equipedWeapon) {
+			equipedWeapon.OnUnequip ();
+			ObjectPool.Instance.ReturnToPool (equipedWeapon);
+		}
 	}
 }
