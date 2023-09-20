@@ -8,22 +8,37 @@ public class PlayerController : MonoBehaviour {
 
 	List<string> allWeapons;
 
-	Weapon[] weapons;
-	public Weapon equipedWeapon;
+	Dictionary<string, Weapon> weapons;
+
+	int currentWeaponId = 0;
+	Weapon equipedWeapon;
 
 	private void Awake () {
+		allWeapons = new List<string> ();
+		weapons = new Dictionary<string, Weapon> ();
 		Events.Gameplay.Shot += Shot;
 		Events.Gameplay.SwitchWeapon += SwitchWeapon;
+	}
+	private void Start () {
+		GetAllWeapons ();
 	}
 	private void OnDestroy () {
 		Events.Gameplay.Shot -= Shot;
 		Events.Gameplay.SwitchWeapon -= SwitchWeapon;
 	}
 
+	void GetAllWeapons () {
+		ObjectPool.Instance.GetAllPoolsOfType ("Weapon", ref allWeapons);
+		//foreach (var weaponName in allWeapons) {
+		//	Weapon newWeapon = ObjectPool.Instance.GetFromPool (weaponName).GetComponent<Weapon> ();
+		//	newWeapon.Initialize ();
+		//	weapons.Add (newWeapon);
+		//}
+	}
+
 	void Shot () {
 		if (equipedWeapon == null)
 			return;
-		EditorUtility.SetDirty (equipedWeapon);
 		if (!equipedWeapon.CanBeUsed) {
 			Debug.Log ("Weapon cant be used: " + equipedWeapon.WeaponName);
 			return;
@@ -32,6 +47,26 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	void SwitchWeapon () {
-		Weapon weapon = ObjectPool.Instance.GetFromPool ("meleeWeapon_katana").GetComponent<Weapon> ();
+		if (equipedWeapon) {
+			equipedWeapon.OnUnequip ();
+			ObjectPool.Instance.ReturnToPool (equipedWeapon);
+		}
+
+		currentWeaponId++;
+		if (allWeapons.Count <= currentWeaponId)
+			currentWeaponId = 0;
+
+		Weapon newWeapon = ObjectPool.Instance.GetFromPool (allWeapons[currentWeaponId]).GetComponent<Weapon> ();
+		weapons.TryGetValue (newWeapon.WeaponName, out Weapon ownedWeapon);
+
+		if (!ownedWeapon) {
+			weapons.Add (newWeapon.WeaponName, newWeapon);
+			newWeapon.Initialize ();
+		} else 
+			newWeapon.SetStatistics (ownedWeapon);
+
+		equipedWeapon = newWeapon;
+		equipedWeapon.transform.SetParent (handle);
+		equipedWeapon.OnEquip ();
 	}
 }

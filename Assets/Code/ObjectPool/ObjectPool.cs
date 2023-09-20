@@ -10,42 +10,6 @@ public class ObjectPool : MonoSingleton<ObjectPool> {
 
 	Transform mainPoolParent;
 
-	public class PoolObject {
-		public string name;
-		public GameObject prefab;
-		public Dictionary<Type, Component> components;
-		public string category;
-		public bool taken;
-
-		public PoolObject (string name, GameObject prefab) {
-			this.name = name;
-			this.prefab = prefab;
-			category = name.Substring (0, name.IndexOf ('_'));
-
-			components = new Dictionary<Type, Component> ();
-			Component[] componentsTmp = prefab.GetComponents (typeof (Component));
-			foreach (var compTmp in componentsTmp) {
-				components[compTmp.GetType ()] = compTmp;
-			}
-		}
-
-		public Component GetComponent (Type type) {
-			Component component = null;
-			components.TryGetValue (type, out component);
-			if(!component)
-				foreach (var comp in components) {
-					if (type.IsAssignableFrom (comp.Key))
-						return comp.Value;
-				}
-			return component;
-		}
-
-		public T GetComponent<T> () where T : Component {
-			return GetComponent (typeof (T)) as T;
-		}
-	}
-
-
 	protected override void Awake () {
 		base.Awake ();
 
@@ -88,6 +52,61 @@ public class ObjectPool : MonoSingleton<ObjectPool> {
 		else {
 			Debug.LogError ("Pool cannot be found");
 			return null;
+		}
+	}
+
+	public void ReturnToPool (IPoolable poolableObject) {
+		PoolObject poolObj = poolableObject.Poolable;
+		PoolInstance instance = null;
+		poolDictionary.TryGetValue (poolObj.name, out instance);
+
+		if (instance != null)
+			instance.ReturnToPool (poolObj);
+		else {
+			Debug.LogError ("Object is not from pool", poolObj.prefab);
+		}
+	}
+
+	public void GetAllPoolsOfType(string type, ref List<string> pools) {
+		foreach (var poolDictionary in poolDictionary) {
+			if (!poolDictionary.Key.Contains (type))
+				continue;
+			pools.Add (poolDictionary.Key);
+		}
+	}
+
+	public class PoolObject {
+		public string name;
+		public GameObject prefab;
+		public Dictionary<Type, Component> components;
+		public bool taken;
+
+		public PoolObject (string name, GameObject prefab) {
+			this.name = name;
+			this.prefab = prefab;
+
+			components = new Dictionary<Type, Component> ();
+			Component[] componentsTmp = prefab.GetComponents (typeof (Component));
+			foreach (var compTmp in componentsTmp) {
+				if (compTmp is IPoolable poolableComp)
+					poolableComp.AssignPoolable (this);
+				components[compTmp.GetType ()] = compTmp;
+			}
+		}
+
+		public Component GetComponent (Type type) {
+			Component component = null;
+			components.TryGetValue (type, out component);
+			if (!component)
+				foreach (var comp in components) {
+					if (type.IsAssignableFrom (comp.Key))
+						return comp.Value;
+				}
+			return component;
+		}
+
+		public T GetComponent<T> () where T : Component {
+			return GetComponent (typeof (T)) as T;
 		}
 	}
 
@@ -147,5 +166,10 @@ public class ObjectPool : MonoSingleton<ObjectPool> {
 		public string name;
 		public GameObject prefab;
 		public int size;
+	}
+
+	public interface IPoolable {
+		PoolObject Poolable { get; }
+		void AssignPoolable (PoolObject poolable);
 	}
 }
