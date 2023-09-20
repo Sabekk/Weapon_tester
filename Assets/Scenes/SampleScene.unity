@@ -185,6 +185,7 @@ Transform:
   m_Children:
   - {fileID: 963194228}
   - {fileID: 1911868976}
+  - {fileID: 921920595}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -380,6 +381,63 @@ Transform:
   m_Father: {fileID: 956943570}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &921920594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 921920595}
+  - component: {fileID: 921920596}
+  m_Layer: 0
+  m_Name: ObjectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &921920595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921920594}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 311203366}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &921920596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921920594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f71efe5bb766bf84c9ca91788d18eb50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolInstance:
+  - name: meleeWeapon_katana
+    prefab: {fileID: 5023769937956243065, guid: 2e430c616fb03e246b7cdb4e099f4a5f, type: 3}
+    size: 1
+  - name: meleeWeapon_knife
+    prefab: {fileID: 5175563499793116066, guid: e912a056c00111d41b7e6d29098fa80e, type: 3}
+    size: 1
+  - name: gunWeapon_ak47
+    prefab: {fileID: 6438443373783516473, guid: d7527361a99291a4da8386bf5a59d137, type: 3}
+    size: 1
+  - name: gunWeapon_Luger
+    prefab: {fileID: 6085429579062679104, guid: 3ece0d531d2cd7e4286aed3b1b860621, type: 3}
+    size: 1
 --- !u!1 &956943569
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +620,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1911868978

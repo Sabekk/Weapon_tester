@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 	[SerializeField] Transform handle;
 
+	List<string> allWeapons;
+
 	Weapon[] weapons;
 	public Weapon equipedWeapon;
 
@@ -17,7 +19,6 @@ public class PlayerController : MonoBehaviour {
 		Events.Gameplay.Shot -= Shot;
 		Events.Gameplay.SwitchWeapon -= SwitchWeapon;
 	}
-
 
 	void Shot () {
 		if (equipedWeapon == null)
@@ -31,6 +32,6 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	void SwitchWeapon () {
-
+		Weapon weapon = ObjectPool.Instance.GetFromPool ("meleeWeapon_katana").GetComponent<Weapon> ();
 	}
 }
