@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	private void Start () {
 		GetAllWeapons ();
+		ChangeWeaponName ();
 	}
 	private void OnDestroy () {
 		Events.Gameplay.Shot -= Shot;
@@ -29,11 +30,10 @@ public class PlayerController : MonoBehaviour {
 
 	void GetAllWeapons () {
 		ObjectPool.Instance.GetAllPoolsOfType ("Weapon", ref allWeapons);
-		//foreach (var weaponName in allWeapons) {
-		//	Weapon newWeapon = ObjectPool.Instance.GetFromPool (weaponName).GetComponent<Weapon> ();
-		//	newWeapon.Initialize ();
-		//	weapons.Add (newWeapon);
-		//}
+	}
+
+	void ChangeWeaponName () {
+		Events.UI.OnWeaponSwitched.Invoke (equipedWeapon != null ? equipedWeapon.WeaponName : "");
 	}
 
 	void Shot () {
@@ -52,7 +52,8 @@ public class PlayerController : MonoBehaviour {
 			ObjectPool.Instance.ReturnToPool (equipedWeapon);
 		}
 
-		currentWeaponId++;
+		if (equipedWeapon)
+			currentWeaponId++;
 		if (allWeapons.Count <= currentWeaponId)
 			currentWeaponId = 0;
 
@@ -62,11 +63,13 @@ public class PlayerController : MonoBehaviour {
 		if (!ownedWeapon) {
 			weapons.Add (newWeapon.WeaponName, newWeapon);
 			newWeapon.Initialize ();
-		} else 
+		} else
 			newWeapon.SetStatistics (ownedWeapon);
 
 		equipedWeapon = newWeapon;
 		equipedWeapon.transform.SetParent (handle);
 		equipedWeapon.OnEquip ();
+
+		ChangeWeaponName ();
 	}
 }
